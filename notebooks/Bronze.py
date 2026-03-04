@@ -3,8 +3,9 @@ print("Hello world")
 
 # COMMAND ----------
 
+# DBTITLE 1,Cell 2
 # required functions import
-from pyspark.sql.functions import current_timestamp, input_file_name
+from pyspark.sql.functions import current_timestamp, input_file_name, from_utc_timestamp
 
 # Configuration
 src_path = "/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/src"
@@ -15,8 +16,11 @@ schema_path_bronze = "/Volumes/accenture/manishgautam/manishvolume/structuredStr
 #schema_path_silver = "/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/schema/silver/"
 #schema_path_gold = "/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/schema/gold/"
 
+bronze_table= 'accenture.manishgautam.bronze_table'
+
 # COMMAND ----------
 
+# DBTITLE 1,Untitled
 # STEP 1: streaming dataframe create (Auto Loader)
 df_stream = (
     spark.readStream
@@ -26,22 +30,19 @@ df_stream = (
     .option("inferSchema", "true")
     .option("cloudFiles.useNotifications", "false")  # yeh add karo
     .option("cloudFiles.schemaLocation", schema_path_bronze
-)
+    )
     .load(src_path)
-)
+    )
 
 # COMMAND ----------
 
+# DBTITLE 1,Cell 4
 # STEP 2: Bronze layer metadata columns
 bronze_df = (
     df_stream
-    .withColumn("ingestion_time", current_timestamp())
+    .withColumn("ingestion_time", current_timestamp()) 
     .withColumn("source_file", input_file_name())
 )
-
-# COMMAND ----------
-
-bronze_df.printSchema()
 
 # COMMAND ----------
 
@@ -52,11 +53,18 @@ query = (
     .format("delta")
     .outputMode("append")
     .option("checkpointLocation", checkpoint_path_bronze)
-    .toTable("accenture.manishgautam.bronze_table")
+    .toTable(bronze_table)
 )
 
 # COMMAND ----------
 
+display(spark.table("accenture.manishgautam.bronze_table").count())
+
+# COMMAND ----------
+
+spark.sql("select * from accenture.manishgautam.bronze_table").limit(2).display()
+
+# COMMAND ----------
+
 # DBTITLE 1,Cell 7
-spark.sql("select count
-(*) from accenture.manishgautam.bronze_table").display()
+
