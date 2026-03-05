@@ -1,25 +1,15 @@
 # Databricks notebook source
-# Databricks notebook source
-
-# 1. Imports
 from pyspark.sql.functions import *
 from delta.tables import *
 
-# COMMAND ----------
-
-# 2. Table names
 bronze_table = "accenture.manishgautam.bronze_table"
 silver_table_stream = "accenture.manishgautam.silver_table_stream"
 
-# COMMAND ----------
-
-# 3. Read Bronze as stream
 df_bronze_stream = spark.readStream.table(bronze_table)
 
 # COMMAND ----------
 
 
-# 4. Apply same transformations
 df_silver_stream = (
     df_bronze_stream
 
@@ -27,27 +17,26 @@ df_silver_stream = (
     .dropDuplicates(["TransactionID"])
     .dropna(subset=["TransactionID", "PatientID", "Amount"])
 
-    # Fix data types
+    # modify datatypes
     .withColumn("VisitDate", to_date("VisitDate","M/d/yyyy"))
     .withColumn("ServiceDate", to_date("ServiceDate","M/d/yyyy"))
     .withColumn("PaidDate", to_date("PaidDate","M/d/yyyy"))
-
     .withColumn("Amount", round(col("Amount"),2))
     .withColumn("PaidAmount", round(col("PaidAmount"),2))
 
-    # New columns
+#adding few columns
     .withColumn("processing_days", datediff(col("PaidDate"),col("ServiceDate")))
     .withColumn("pending_amount", round(col("Amount") - col("PaidAmount"),2))
     .withColumn("payment_percentage", round((col("PaidAmount")/col("Amount"))*100,2))
 
-    # Payment status
+    # Payment...status
     .withColumn("payment_status",
         when(col("PaidAmount") >= col("Amount"),"FULLY_PAID")
         .when(col("PaidAmount") == 0,"UNPAID")
         .otherwise("PARTIALLY_PAID")
     )
 
-    # Payor category
+#category payer
     .withColumn("payor_category",
         when(col("LineOfBusiness")=="MEDICARE","GOVERNMENT")
         .when(col("LineOfBusiness")=="MEDICAID","GOVERNMENT")
@@ -55,14 +44,13 @@ df_silver_stream = (
         .otherwise("OTHER")
     )
 
-    # Same day flag
+    # Same day treatment and mapping flag
     .withColumn("is_same_day",
         when(col("VisitDate")==col("ServiceDate"),True).otherwise(False)
     )
 
     .withColumn("silver_ingestion_time", current_timestamp())
 
-    # Filters
     .filter(col("Amount") > 0)
     .filter(col("PaidDate") >= col("ServiceDate"))
 )
@@ -71,7 +59,6 @@ df_silver_stream = (
 # COMMAND ----------
 
 
-# 5. Merge logic for streaming
 def upsert_to_silver(microBatchDF, batchId):
 
     if not spark.catalog.tableExists(silver_table_stream):
@@ -94,12 +81,18 @@ def upsert_to_silver(microBatchDF, batchId):
 
 # COMMAND ----------
 
-# 6. Start stream
 query = (
     df_silver_stream.writeStream
     .foreachBatch(upsert_to_silver)
-    .option("checkpointLocation",
-        "/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints/silver_stream")
+    .trigger(processingTime="10 seconds")
+    .option("checkpointLocation", "/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints/silver_stream")
     .outputMode("update")
+    .trigger(availableNow=True)
     .start()
 )
+
+# COMMAND ----------
+
+from datetime import datetime, timezone, timedelta
+ist = timezone(timedelta(hours=5, minutes=30))
+print(f"data copy to silver: {datetime.now(ist)}")
