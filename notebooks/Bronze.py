@@ -1,4 +1,8 @@
 # Databricks notebook source
+
+
+# COMMAND ----------
+
 print("Hello world")
 
 # COMMAND ----------
@@ -46,19 +50,25 @@ bronze_df = (
 
 # COMMAND ----------
 
+#bronze_df.printSchema()
+
+# COMMAND ----------
+
 # DBTITLE 1,Cell 6
 # STEP 3: Write to Bronze Delta table (Unity Catalog)
+
 query = (
     bronze_df.writeStream
     .format("delta")
     .outputMode("append")
     .option("checkpointLocation", checkpoint_path_bronze)
+    .trigger(availableNow=True)   # process all available files and then stop
     .toTable(bronze_table)
 )
 
 # COMMAND ----------
 
-display(spark.table("accenture.manishgautam.bronze_table").count())
+display(spark.table("accenture.manishgautam.silver_table").count())
 
 # COMMAND ----------
 
@@ -67,4 +77,6 @@ spark.sql("select * from accenture.manishgautam.bronze_table").limit(2).display(
 # COMMAND ----------
 
 # DBTITLE 1,Cell 7
-
+from datetime import datetime, timezone, timedelta
+ist = timezone(timedelta(hours=5, minutes=30))
+print(f"data copy to bronze: {datetime.now(ist)}")
