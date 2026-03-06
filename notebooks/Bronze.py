@@ -75,3 +75,9 @@ spark.sql("select * from accenture.manishgautam.bronze_table").limit(2).display(
 from datetime import datetime, timezone, timedelta
 ist = timezone(timedelta(hours=5, minutes=30))
 print(f"data copy to bronze: {datetime.now(ist)}")
+
+# COMMAND ----------
+
+from datetime import datetime, timezone, timedelta
+ist = timezone(timedelta(hours=5, minutes=30))
+print(f"notebook completed sucessfully at: {datetime.now(ist)}")
