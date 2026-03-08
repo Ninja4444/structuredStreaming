@@ -1,12 +1,4 @@
 # Databricks notebook source
-
-
-# COMMAND ----------
-
-print("Hello world")
-
-# COMMAND ----------
-
 # DBTITLE 1,Cell 2
 from pyspark.sql.functions import current_timestamp, input_file_name, from_utc_timestamp
 
@@ -63,18 +55,7 @@ query = (
 
 # COMMAND ----------
 
-display(spark.table("accenture.manishgautam.silver_table").count())
-
-# COMMAND ----------
-
-spark.sql("select * from accenture.manishgautam.bronze_table").limit(2).display()
-
-# COMMAND ----------
-
-# DBTITLE 1,Cell 7
-from datetime import datetime, timezone, timedelta
-ist = timezone(timedelta(hours=5, minutes=30))
-print(f"data copy to bronze: {datetime.now(ist)}")
+#display(spark.sql("Select count(*) from accenture.manishgautam.bronze_table"))
 
 # COMMAND ----------
 

@@ -70,10 +70,7 @@ def upsert_to_silver(microBatchDF, batchId):
         delta_table = DeltaTable.forName(spark, silver_table_stream)
 
         (delta_table.alias("target")
-         .merge(
-            microBatchDF.alias("updates"),
-            "target.TransactionID = updates.TransactionID"
-         )
+         .merge(microBatchDF.alias("updates"),"target.TransactionID = updates.TransactionID")
          .whenMatchedUpdateAll()
          .whenNotMatchedInsertAll()
          .execute())
