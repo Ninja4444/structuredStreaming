@@ -13,6 +13,10 @@ bronze_table= 'accenture.manishgautam.bronze_table'
 
 # COMMAND ----------
 
+spark.conf.set("spark.sql.shuffle.partitions", 50)
+
+# COMMAND ----------
+
 # DBTITLE 1,Untitled
 df_stream = (
     spark.readStream
@@ -23,8 +27,7 @@ df_stream = (
     .option("cloudFiles.useNotifications", "false")  
     .option("cloudFiles.schemaLocation", schema_path_bronze
     )
-    .load(src_path)
-    )
+    .load(src_path))
 
 # COMMAND ----------
 

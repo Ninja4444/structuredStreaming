@@ -1,7 +1,16 @@
 # Databricks notebook source
-# dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints/gold_stream", recurse=True)
+#dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints/gold_stream", recurse=True)
 dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints", recurse=True)
 dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/schema", recurse=True)
+dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/src/dataset_1.csv", recurse=True)
+# dbutils.fs.mkdirs("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/src/")
+
+
+# COMMAND ----------
+
+path = "/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/src/dataset_4.csv"
+df = spark.read.csv(path, header=True, inferSchema=True)
+display(df.count())
 
 # COMMAND ----------
 

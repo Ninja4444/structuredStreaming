@@ -2,8 +2,10 @@
 from pyspark.sql.functions import *
 from delta.tables import *
 
-silver_table= "accenture.manishgautam.silver_table"
-#silver_table= "accenture.manishgautam.silver_table_stream"
+spark.conf.set("spark.sql.shuffle.partitions", 50)
+
+silver_table= "accenture.manishgautam.silver_table"  #to run with batch
+#silver_table= "accenture.manishgautam.silver_table_stream" #to run with streaming
 gold_table= "accenture.manishgautam.gold_table_stream"
 
 
@@ -35,6 +37,9 @@ df_gold_stream = (
 # COMMAND ----------
 
 def upsert_to_gold(microBatchDF, batchId):
+
+    row_count = microBatchDF.count()
+    print(f"Batch ID: {batchId} | Rows processed: {row_count}")
 
     if not spark.catalog.tableExists(gold_table):
         (microBatchDF.write
@@ -74,7 +79,7 @@ query.awaitTermination()
 
 # COMMAND ----------
 
-display(spark.table("accenture.manishgautam.gold_table_stream").count())
+#display(spark.table("accenture.manishgautam.gold_table_stream").count())
 
 # COMMAND ----------
 

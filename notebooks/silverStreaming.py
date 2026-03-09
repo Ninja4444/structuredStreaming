@@ -2,6 +2,9 @@
 from pyspark.sql.functions import *
 from delta.tables import *
 
+spark.conf.set("spark.sql.shuffle.partitions", 50)
+
+
 bronze_table = "accenture.manishgautam.bronze_table"
 silver_table_stream = "accenture.manishgautam.silver_table_stream"
 
@@ -60,6 +63,9 @@ df_silver_stream = (
 
 
 def upsert_to_silver(microBatchDF, batchId):
+
+    row_count = microBatchDF.count()
+    print(f"Batch ID: {batchId} | Rows processed: {row_count}")
 
     if not spark.catalog.tableExists(silver_table_stream):
         (microBatchDF.write
