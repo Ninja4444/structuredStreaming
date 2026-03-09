@@ -1,4 +1,10 @@
 # Databricks notebook source
+# dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints/gold_stream", recurse=True)
+dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints", recurse=True)
+dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/schema", recurse=True)
+
+# COMMAND ----------
+
 ##to performe operations:-
 
 # COMMAND ----------

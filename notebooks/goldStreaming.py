@@ -3,7 +3,9 @@ from pyspark.sql.functions import *
 from delta.tables import *
 
 silver_table= "accenture.manishgautam.silver_table"
+#silver_table= "accenture.manishgautam.silver_table_stream"
 gold_table= "accenture.manishgautam.gold_table_stream"
+
 
 df_silver = spark.readStream.table(silver_table)
 checkpoint_path_gold="/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints/gold_stream"
@@ -62,12 +64,13 @@ def upsert_to_gold(microBatchDF, batchId):
 query = (
     df_gold_stream.writeStream
     .foreachBatch(upsert_to_gold)
-    .option("checkpointLocation",checkpoint_path_gold)
+    .option("checkpointLocation", checkpoint_path_gold)
     .outputMode("update")
     .trigger(availableNow=True)
     .start()
 )
 
+query.awaitTermination()
 
 # COMMAND ----------
 

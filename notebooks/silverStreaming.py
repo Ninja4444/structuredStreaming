@@ -81,7 +81,6 @@ def upsert_to_silver(microBatchDF, batchId):
 query = (
     df_silver_stream.writeStream
     .foreachBatch(upsert_to_silver)
-    .trigger(processingTime="10 seconds")
     .option("checkpointLocation", "/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints/silver_stream")
     .outputMode("update")
     .trigger(availableNow=True)
