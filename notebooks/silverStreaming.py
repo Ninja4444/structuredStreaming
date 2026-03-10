@@ -2,7 +2,7 @@
 from pyspark.sql.functions import *
 from delta.tables import *
 
-spark.conf.set("spark.sql.shuffle.partitions", 50)
+spark.conf.set("spark.sql.shuffle.partitions", 64)
 
 
 bronze_table = "accenture.manishgautam.bronze_table"
@@ -16,7 +16,7 @@ df_bronze_stream = spark.readStream.table(bronze_table)
 df_silver_stream = (
     df_bronze_stream
 
-    # Remove duplicates & nulls
+    #remove duplicates & nulls
     .dropDuplicates(["TransactionID"])
     .dropna(subset=["TransactionID", "PatientID", "Amount"])
 
@@ -47,7 +47,7 @@ df_silver_stream = (
         .otherwise("OTHER")
     )
 
-    # Same day treatment and mapping flag
+#same day treatment and mapping flag
     .withColumn("is_same_day",
         when(col("VisitDate")==col("ServiceDate"),True).otherwise(False)
     )

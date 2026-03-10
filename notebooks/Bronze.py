@@ -13,7 +13,7 @@ bronze_table= 'accenture.manishgautam.bronze_table'
 
 # COMMAND ----------
 
-spark.conf.set("spark.sql.shuffle.partitions", 50)
+spark.conf.set("spark.sql.shuffle.partitions", 64)
 
 # COMMAND ----------
 

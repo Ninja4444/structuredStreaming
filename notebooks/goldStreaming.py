@@ -2,10 +2,10 @@
 from pyspark.sql.functions import *
 from delta.tables import *
 
-spark.conf.set("spark.sql.shuffle.partitions", 50)
+spark.conf.set("spark.sql.shuffle.partitions", 64)
 
-silver_table= "accenture.manishgautam.silver_table"  #to run with batch
-#silver_table= "accenture.manishgautam.silver_table_stream" #to run with streaming
+#silver_table= "accenture.manishgautam.silver_table"  #to run with batch
+silver_table= "accenture.manishgautam.silver_table_stream" #to run with streaming
 gold_table= "accenture.manishgautam.gold_table_stream"
 
 

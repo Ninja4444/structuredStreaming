@@ -2,7 +2,7 @@
 #dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints/gold_stream", recurse=True)
 dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/checkpoints", recurse=True)
 dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/schema", recurse=True)
-dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/src/dataset_1.csv", recurse=True)
+#dbutils.fs.rm("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/src/dataset_1.csv", recurse=True)
 # dbutils.fs.mkdirs("/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/src/")
 
 
@@ -51,3 +51,7 @@ print(f"notebook completed sucessfully at: {datetime.now(ist)}")
 # COMMAND ----------
 
 print(spark.table("accenture.manishgautam.silver_table").columns)
+
+# COMMAND ----------
+
+display(spark.sql("select * from accenture.manishgautam.silver_table_stream").limit(5))
