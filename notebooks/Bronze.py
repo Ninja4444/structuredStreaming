@@ -11,6 +11,7 @@ schema_path_bronze = "/Volumes/accenture/manishgautam/manishvolume/structuredStr
 #schema_path_gold = "/Volumes/accenture/manishgautam/manishvolume/structuredStreaming/schema/gold/"
 bronze_table= 'accenture.manishgautam.bronze_table'
 
+
 # COMMAND ----------
 
 spark.conf.set("spark.sql.shuffle.partitions", 64)
